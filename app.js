@@ -1,5 +1,6 @@
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const createError = require('http-errors');
 const express = require('express');
 const favicon = require('serve-favicon');
@@ -17,6 +18,7 @@ const app = express();
 app.use(logger('dev'));
 app.disable('x-powered-by');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(cors());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

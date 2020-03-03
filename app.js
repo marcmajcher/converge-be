@@ -4,17 +4,20 @@ const cors = require('cors');
 const createError = require('http-errors');
 const express = require('express');
 const favicon = require('serve-favicon');
+const http = require('http');
 const logger = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
 const randomstring = require('randomstring');
 const session = require('cookie-session');
-// const socket = require('./socket');
+const socket = require('./socket');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
+const server = http.createServer(app);
+
 app.use(logger('dev'));
 app.disable('x-powered-by');
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -38,8 +41,7 @@ const sessionMiddleware = session({
     .map(randomstring.generate),
 });
 app.use(sessionMiddleware);
-
-// app.use(socket.expressSocket(server, sessionMiddleware));
+app.use(socket.expressSocket(server, sessionMiddleware));
 
 app.use(function(req, res, next) {
   next(createError(404));
@@ -52,4 +54,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+module.exports = { app, server };

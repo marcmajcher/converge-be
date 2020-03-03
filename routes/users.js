@@ -9,7 +9,11 @@ const APP_ID =
 const client = new OAuth2Client(APP_ID);
 const SECRET = '__C_H_A_N_G_E_M_E__';
 
-router.post('/', function(req, res, next) {
+router.get('/', (req, res) => {
+  res.json(User.all())
+})
+
+router.post('/', (req, res) =>{
   client
     .verifyIdToken({
       idToken: req.body.token,

@@ -3,8 +3,8 @@ const mockDB = {
 };
 
 class Model {
-  constructor(data, className = 'model') {
-    this.key = className;
+  constructor(data, key = 'model') {
+    this.key = key;
     this.data = data;
   }
 
@@ -12,15 +12,15 @@ class Model {
     console.log(`HI! I am a ${this.key}, id: ${this.id}`);
   }
 
-  list() {
-    // list: () => util.knex(db),
+  static all() {
+    return Object.values(mockDB[new this().key]);
   }
 
   static find(id) {
     return new this(mockDB[new this().key][id]);
   }
 
-  getValue(id, param) {
+   getValue(id, param) {
     // getValue: (id, param) => util.knex.select(param).from(db).where('id', id),
   }
 

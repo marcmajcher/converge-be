@@ -8,8 +8,6 @@ const http = require('http');
 const logger = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
-const randomstring = require('randomstring');
-const session = require('cookie-session');
 const socket = require('./socket');
 
 const indexRouter = require('./routes/index');
@@ -35,13 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-const sessionMiddleware = session({
-  keys: new Array(Math.ceil(Math.random() * 8) + 8)
-    .fill(0)
-    .map(randomstring.generate),
-});
-app.use(sessionMiddleware);
-app.use(socket.expressSocket(server, sessionMiddleware));
+app.use(socket.expressSocket(server));
 
 app.use(function(req, res, next) {
   next(createError(404));

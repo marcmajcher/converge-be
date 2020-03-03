@@ -2,7 +2,6 @@ const Model = require('./_model');
 
 class User extends Model {
   constructor(data) {
-    // data.id = data.googleId;
     super(data, 'user');
   }
 

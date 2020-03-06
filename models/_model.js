@@ -3,21 +3,21 @@ const mockDB = {
 };
 
 class Model {
-  constructor(data, key = 'model') {
-    this.key = key;
+  constructor(data, table = 'model') {
+    this.table = table;
     this.data = data;
   }
 
   sayHi() {
-    console.log(`HI! I am a ${this.key}, id: ${this.id}`);
+    console.log(`HI! I am a ${this.table}, id: ${this.id}`);
   }
 
   static all() {
-    return Object.values(mockDB[new this().key]);
+    return Object.values(mockDB[new this().table]);
   }
 
   static find(id) {
-    return new this(mockDB[new this().key][id]);
+    return new this(mockDB[new this().table][id]);
   }
 
    getValue(id, param) {
@@ -25,7 +25,7 @@ class Model {
   }
 
   save() {
-    mockDB[this.key][this.id] = this.data;
+    mockDB[this.table][this.id] = this.data;
     return this;
   }
 

@@ -8,13 +8,14 @@ const http = require('http');
 const logger = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
-const socket = require('./socket');
+const socketio = require('socket.io');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
 const server = http.createServer(app);
+const io = socketio(server);
 
 app.use(logger('dev'));
 app.disable('x-powered-by');
@@ -33,8 +34,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-app.use(socket.expressSocket(server));
-
 app.use(function(req, res, next) {
   next(createError(404));
 });
@@ -44,6 +43,14 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.render('error');
+});
+
+io.on('connection', socket => {
+  console.log('Client connected');
+  setInterval(() => {
+    socket.emit('number', `Here's a random number: ${Math.random()}`);
+  }, 1000);
+  socket.on('disconnect', () => console.log('...disconnected.'));
 });
 
 module.exports = { app, server };

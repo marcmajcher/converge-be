@@ -8,14 +8,14 @@ const http = require('http');
 const logger = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
-const socketio = require('socket.io');
+var socketioJwt = require('socketio-jwt');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const io = require('socket.io')(server);
 
 app.use(logger('dev'));
 app.disable('x-powered-by');
@@ -45,26 +45,28 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-io.on('connection', socket => {
-  console.log('Client connected');
+// io.on('connection', socket => {
+//   console.log('Client connected');
+//   setInterval(() => {
+//     socket.emit('number', Math.random());
+//   }, 1000);
+//   socket.on('disconnect', () => console.log('...disconnected.'));
+// });
+
+const SECRET = '__C_H_A_N_G_E_M_E__';
+io.on(
+  'connection',
+  socketioJwt.authorize({
+    secret: SECRET,
+    timeout: 15000,
+  })
+).on('authenticated', socket => {
+  const googleId = socket.decoded_token;
+  console.log(`Client ${googleId} connected`);
   setInterval(() => {
     socket.emit('number', Math.random());
   }, 1000);
   socket.on('disconnect', () => console.log('...disconnected.'));
 });
-
-/*
-  var io = require('socket.io')();
-  var socketioJwt = require('socketio-jwt');
-
-  io.sockets
-    .on('connection', socketioJwt.authorize({
-      secret: 'SECRET_KEY',
-      timeout: 15000 // 15 seconds to send the authentication message
-    })).on('authenticated', function(socket) {
-      //this socket is authenticated, we are good to handle more events from it.
-      console.log('hello! ' + socket.decoded_token.name);
-    });
-*/
 
 module.exports = { app, server };

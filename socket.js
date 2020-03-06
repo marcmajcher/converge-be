@@ -42,10 +42,6 @@ module.exports = {
 
 /*
 
-npm install socketio-jwt
-
-
----
 
 // set authorization for socket.io
 io.sockets

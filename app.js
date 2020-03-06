@@ -45,14 +45,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// io.on('connection', socket => {
-//   console.log('Client connected');
-//   setInterval(() => {
-//     socket.emit('number', Math.random());
-//   }, 1000);
-//   socket.on('disconnect', () => console.log('...disconnected.'));
-// });
-
 const SECRET = '__C_H_A_N_G_E_M_E__';
 io.on(
   'connection',

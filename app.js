@@ -48,9 +48,23 @@ app.use(function(err, req, res, next) {
 io.on('connection', socket => {
   console.log('Client connected');
   setInterval(() => {
-    socket.emit('number', `Here's a random number: ${Math.random()}`);
+    socket.emit('number', Math.random());
   }, 1000);
   socket.on('disconnect', () => console.log('...disconnected.'));
 });
+
+/*
+  var io = require('socket.io')();
+  var socketioJwt = require('socketio-jwt');
+
+  io.sockets
+    .on('connection', socketioJwt.authorize({
+      secret: 'SECRET_KEY',
+      timeout: 15000 // 15 seconds to send the authentication message
+    })).on('authenticated', function(socket) {
+      //this socket is authenticated, we are good to handle more events from it.
+      console.log('hello! ' + socket.decoded_token.name);
+    });
+*/
 
 module.exports = { app, server };

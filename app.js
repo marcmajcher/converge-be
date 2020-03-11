@@ -8,7 +8,7 @@ const http = require('http');
 const logger = require('morgan');
 const methodOverride = require('method-override');
 const path = require('path');
-var socketioJwt = require('socketio-jwt');
+const socketInit = require('./socket');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -16,6 +16,7 @@ const usersRouter = require('./routes/users');
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server);
+socketInit(io);
 
 app.use(logger('dev'));
 app.disable('x-powered-by');
@@ -43,25 +44,6 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.render('error');
-});
-
-const secret = '__C_H_A_N_G_E_M_E__';
-io.use(
-  socketioJwt.authorize({
-    secret,
-    handshake: true,
-  })
-);
-
-io.on('connection', socket => {
-  const googleId = socket.decoded_token;
-  console.log('AUTHENIGDCATD');
-  
-  console.log(`Client ${googleId} connected`);
-  setInterval(() => {
-    socket.emit('number', Math.random());
-  }, 1000);
-  socket.on('disconnect', () => console.log('...disconnected.'));
 });
 
 module.exports = { app, server };

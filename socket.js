@@ -1,7 +1,9 @@
-const secret = '__C_H_A_N_G_E_M_E__';
 const socketioJwt = require('socketio-jwt');
+const socketio = require('socket.io');
+const secret = '__C_H_A_N_G_E_M_E__';
 
-module.exports = function socketInit(io) {
+module.exports = function socketInit(server) {
+  const io = socketio(server);
   io.use(
     socketioJwt.authorize({
       secret,
@@ -13,14 +15,21 @@ module.exports = function socketInit(io) {
     const googleId = socket.decoded_token;
     console.log(`Client ${googleId} connected`);
 
-    setInterval(() => {
-      socket.emit('number', Math.random());
-    }, 1000);
-    
-    socket.on('disconnect', () => console.log('...disconnected.'));
+    socket.on('disconnect', onDisconnect);
+
+    startNumberStation();
   });
 };
 
+function onDisconnect() {
+  console.log('...disconnected.');
+}
+
+function startNumberStation(socket) {
+  setInterval(() => {
+    socket.emit('number', Math.random());
+  }, 1000);
+}
 // var io;
 // var gameSocket;
 

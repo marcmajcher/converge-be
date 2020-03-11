@@ -15,8 +15,7 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server);
-socketInit(io);
+socketInit(server);
 
 app.use(logger('dev'));
 app.disable('x-powered-by');

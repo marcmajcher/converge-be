@@ -45,15 +45,18 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-const SECRET = '__C_H_A_N_G_E_M_E__';
-io.on(
-  'connection',
+const secret = '__C_H_A_N_G_E_M_E__';
+io.use(
   socketioJwt.authorize({
-    secret: SECRET,
-    timeout: 15000,
+    secret,
+    handshake: true,
   })
-).on('authenticated', socket => {
+);
+
+io.on('connection', socket => {
   const googleId = socket.decoded_token;
+  console.log('AUTHENIGDCATD');
+  
   console.log(`Client ${googleId} connected`);
   setInterval(() => {
     socket.emit('number', Math.random());

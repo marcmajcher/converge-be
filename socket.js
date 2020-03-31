@@ -17,7 +17,7 @@ module.exports = function socketInit(server) {
 
     socket.on('disconnect', onDisconnect);
 
-    startNumberStation();
+    startNumberStation(socket);
   });
 };
 

@@ -22,7 +22,6 @@ router.post('/', (req, res) =>{
     .then(ticket => ticket.getPayload()['sub'])
     .then(user_id => {
       const user = User.create(req.body.userData);
-      // user.sayHi();
       res.json({ token: jwt.sign(user.id, SECRET) });
     })
     .catch(console.error);

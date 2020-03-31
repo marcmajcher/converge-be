@@ -1,9 +1,8 @@
 module.exports = {
-  interval: undefined,
-  start() {
+  interval: -1,
+  init(io) {
     this.interval = setInterval(() => {
-      socket.emit('number', Math.random());
+      io.emit('number', Math.random());
     }, 1000);
   },
-  subscribe(socket) {},
 };

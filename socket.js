@@ -1,13 +1,10 @@
 const socketioJwt = require('socketio-jwt');
 const socketio = require('socket.io');
-const numberStation = require('./numberStation');
 const randomWords = require('random-words');
 const secret = '__C_H_A_N_G_E_M_E__';
 
 module.exports = function socketInit(server) {
   const io = socketio(server);
-  numberStation.init(io);
-
   io.use(
     socketioJwt.authorize({
       secret,
@@ -19,9 +16,10 @@ module.exports = function socketInit(server) {
     const googleId = socket.decoded_token;
     console.log(`>> Client ${googleId} connected`);
 
-    socket.on('booyah', data => console.log(`BOOYAH: ${data}`));
     socket.on('startNewGame', onStartNewGame);
+    socket.on('joinGame', onJoinGame);
 
+    socket.on('getStatus', onGetStatus);
     socket.on('disconnect', () => onDisconnect(googleId));
     socket.emit('info', 'Connected to socket - Welcome to Converge!');
   });
@@ -43,4 +41,17 @@ function onStartNewGame() {
 
   console.log('-----');
   console.log(this.adapter.rooms[gameId]);
+}
+
+function onJoinGame(gameId) {
+  if (this.adapter.rooms[gameId] && this.adapter.rooms[gameId].length === 1) {
+    this.join(gameId);
+    this.in(gameId).emit('info', `starting game! ${gameId}`)
+  } else {
+    console.log('ROOM NO GOOD', gameId);
+  }
+}
+
+function onGetStatus() {
+  this.emit('status', 'I gotcher status.');
 }

@@ -36,20 +36,31 @@ function onStartNewGame() {
     maxLength: 7,
   });
   this.emit('info', `Starting a new game! ID: ${gameId}`);
-  this.emit('newGameCreated', { gameId, socketId: this.id });
-  this.join(gameId);
-
-  console.log('-----');
-  console.log(this.adapter.rooms[gameId]);
+  this.join(gameId, () =>
+    this.emit('newGameCreated', { gameId, socketId: this.id })
+  );
 }
 
 function onJoinGame(gameId) {
   if (this.adapter.rooms[gameId] && this.adapter.rooms[gameId].length === 1) {
-    this.join(gameId);
-    this.in(gameId).emit('info', `starting game! ${gameId}`)
+    this.join(gameId, () => onCountdown(this, gameId));
   } else {
     console.log('ROOM NO GOOD', gameId);
   }
+}
+
+function onCountdown(socket, gameId) {
+  const room = socket.nsp.in(gameId)
+  room.emit('info', `starting game!!!! ${gameId}`);
+  let count = 5;
+  const interval = setInterval(() => {
+    if (count === 0) {
+      clearInterval(interval);
+      room.emit('startGame', '----BEGIN----')
+    }
+    room.emit('startCountdown', count--);
+  }, 1000);
+
 }
 
 function onGetStatus() {

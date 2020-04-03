@@ -1,7 +1,7 @@
 const socketioJwt = require('socketio-jwt');
 const socketio = require('socket.io');
 const randomWords = require('random-words');
-const secret = '__C_H_A_N_G_E_M_E__';
+const secret = process.env.SECRET || '__C_H_A_N_G_E_M_E__';
 
 module.exports = function socketInit(server) {
   const io = socketio(server);

@@ -7,7 +7,7 @@ const User = require('../models/user');
 const APP_ID =
   '730966416306-dv0e9pb4m0k6khl2nrn5r9vskv2j8hmk.apps.googleusercontent.com';
 const client = new OAuth2Client(APP_ID);
-const SECRET = '__C_H_A_N_G_E_M_E__';
+const SECRET = process.env.SECRET || '__C_H_A_N_G_E_M_E__';
 
 router.get('/', (req, res) => {
   res.json(User.all())

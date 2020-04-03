@@ -20,8 +20,8 @@ module.exports = function socketInit(server) {
     socket.on('startNewGame', onStartNewGame);
     socket.on('joinGame', onJoinGame);
     socket.on('sendWord', onWordSent);
-
-    socket.on('getStatus', onGetStatus);
+    socket.on('endGame', onEndGame);
+    socket.on('resetGame', onResetGame);
     socket.on('disconnect', () => onDisconnect(googleId));
     socket.emit('info', 'Connected to socket - Welcome to Converge!');
   });
@@ -29,6 +29,8 @@ module.exports = function socketInit(server) {
 
 function onDisconnect(id) {
   console.log(`<< User ${id} disconnected.`);
+  const game = Game.byPlayer(id);
+  game && game.delete();
 }
 
 function onStartNewGame() {
@@ -38,7 +40,6 @@ function onStartNewGame() {
     maxLength: 7,
   });
   new Game(gameId, this.id);
-  // this.emit('info', `Starting a new game! ID: ${gameId}`);
   this.join(gameId, () => this.emit('newGameCreated', { gameId }));
 }
 
@@ -52,20 +53,32 @@ function onJoinGame(gameId) {
 }
 
 function onWordSent(word) {
-  console.log('WORD SENT', word, 'from', this.id);
   const game = Game.byPlayer(this.id);
   const done = game.addWord(this.id, word);
-  console.log(game);
-  console.log('DONE?', done);
   if (done) {
-    this.nsp.in(game.id).emit('roundOver', game.words);
-    game.nextRound();
+    if (game.isWin()) {
+      this.nsp.in(game.id).emit('winGame', game.words);
+    } else {
+      this.nsp.in(game.id).emit('roundOver', game.words);
+      game.nextRound();
+    }
   }
-  //   this.nsp.in(game.id).emit('winGame', game.words);
+}
+
+function onEndGame() {
+  const game = Game.byPlayer(this.id);
+  game && game.delete();
+  this.nsp.in(game.id).emit('endGame');
+}
+
+function onResetGame() {
+  const game = Game.byPlayer(this.id);
+  game.reset();
+  this.nsp.in(game.id).emit('resetGame');
+  countdown(this, game.id);
 }
 
 function countdown(socket, gameId) {
-  // console.log('Counting down for game: ', Game.byId(gameId));
   const room = socket.nsp.in(gameId);
   room.emit('info', `starting game!!!! ${gameId}`);
   let count = 5;
@@ -76,8 +89,4 @@ function countdown(socket, gameId) {
       room.emit('startGame');
     }
   }, 1000);
-}
-
-function onGetStatus() {
-  this.emit('status', 'I gotcher status.');
 }

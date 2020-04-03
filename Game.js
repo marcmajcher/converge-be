@@ -22,18 +22,29 @@ module.exports = class Game {
     return true;
   }
 
+  delete() {
+    this.players.forEach((id) => delete Game.players[id]);
+    delete Game.games[this.id];
+  }
+
   isWin() {
     const values = Object.values(this.words[this.round]);
     return values[0] === values[1];
+  }
+
+  nextRound() {
+    this.round++;
+  }
+
+  reset() {
+    this.round = 0;
+    this.words = [];
   }
 
   roundWords() {
     return this.words[this.round];
   }
 
-  nextRound() {
-    this.round++;
-  }
 
   static byPlayer(playerId) {
     return this.players[playerId];

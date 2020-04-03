@@ -13,7 +13,7 @@ module.exports = function socketInit(server) {
     })
   );
 
-  io.on('connection', socket => {
+  io.on('connection', (socket) => {
     const googleId = socket.decoded_token;
     console.log(`>> Client ${googleId} connected`);
 
@@ -60,23 +60,21 @@ function onWordSent(word) {
   if (done) {
     this.nsp.in(game.id).emit('roundOver', game.words);
     game.nextRound();
-  } 
-  // else {
+  }
   //   this.nsp.in(game.id).emit('winGame', game.words);
-  // }
 }
 
 function countdown(socket, gameId) {
-  console.log('Counting down for game: ', Game.byId(gameId));
+  // console.log('Counting down for game: ', Game.byId(gameId));
   const room = socket.nsp.in(gameId);
   room.emit('info', `starting game!!!! ${gameId}`);
   let count = 5;
   const interval = setInterval(() => {
-    if (count === 0) {
+    room.emit('startCountdown', count--);
+    if (count < 0) {
       clearInterval(interval);
       room.emit('startGame');
     }
-    room.emit('startCountdown', count--);
   }, 1000);
 }
 

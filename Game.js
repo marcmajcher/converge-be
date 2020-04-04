@@ -29,7 +29,7 @@ module.exports = class Game {
 
   isWin() {
     const values = Object.values(this.words[this.round]);
-    return values[0] === values[1];
+    return values[0].toLowerCase() === values[1].toLowerCase();
   }
 
   nextRound() {
